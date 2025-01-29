@@ -10,6 +10,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
@@ -20,11 +21,19 @@ const globalErrorHandler = require('./controllers/errorControllers');
 const reviewRoutes = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const { webhookCheckout } = require('./controllers/bookingControllers');
 
 // creating a server
 const app = express();
 
-// app.enable('trust proxy');
+//webhook checkout happens after user pay successfully
+app.post(
+  '/webhook-checkout',
+  bodyParser.raw({ type: 'application/json' }),
+  webhookCheckout,
+);
+
+app.enable('trust proxy');
 //vid 174
 // to tell express what engines we will be using
 // we don't need to install pug
